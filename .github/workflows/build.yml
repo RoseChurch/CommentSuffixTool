@@ -1,0 +1,35 @@
+name: 构建Android APK
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: 设置JDK
+      uses: actions/setup-java@v1
+      with:
+        java-version: 11
+        
+    - name: 授予执行权限
+      run: chmod +x gradlew
+        
+    - name: 下载Gradle Wrapper
+      run: curl -o gradle/wrapper/gradle-wrapper.jar https://github.com/gradle/gradle/raw/master/gradle/wrapper/gradle-wrapper.jar
+      
+    - name: 构建APK
+      run: ./gradlew assembleDebug
+      
+    - name: 上传APK
+      uses: actions/upload-artifact@v2
+      with:
+        name: app-debug
+        path: app/build/outputs/apk/debug/app-debug.apk 
